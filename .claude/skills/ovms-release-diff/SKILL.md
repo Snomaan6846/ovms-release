@@ -39,7 +39,7 @@ gh api "repos/opendatahub-io/openvino_model_server/branches/${V2_BRANCH}" --jq .
 Fetch `Dockerfile.redhat` from both branches and compare ARGs:
 
 ```bash
-bash "${CLAUDE_SKILL_DIR}/scripts/diff-args.sh" "${V1}" "${V2}"
+ovms-release diff-args "${V2}" --old-version "${V1}"
 ```
 
 Present structured output:

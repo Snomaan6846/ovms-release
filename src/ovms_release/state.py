@@ -29,10 +29,10 @@ def load_state(state_file: Path | None = None, version: str | None = None) -> di
     if path is None or not path.exists():
         return None
     with open(path) as f:
-        state = yaml.safe_load(f)
-    if state is None:
+        raw = yaml.safe_load(f)
+    if not isinstance(raw, dict):
         return None
-    state = _migrate(state)
+    state: dict[str, Any] = _migrate(raw)
     return state
 
 
@@ -75,7 +75,9 @@ def _migrate_v0_to_v1(state: dict[str, Any]) -> dict[str, Any]:
     config.setdefault("jira_server", "https://redhat.atlassian.net")
     config.setdefault("jira_ticket_url", "")
     config.setdefault("notification_webhook", "")
-    config.setdefault("notification_events", ["phase_complete", "phase_failed", "build_ready", "e2e_result", "release_complete"])
+    config.setdefault(
+        "notification_events", ["phase_complete", "phase_failed", "build_ready", "e2e_result", "release_complete"]
+    )
     config.setdefault("e2e_s3_bucket", "ods-ci-s3")
     config.setdefault("e2e_s3_region", "us-east-1")
     config.setdefault("e2e_s3_endpoint", "https://s3.us-east-1.amazonaws.com/")
@@ -105,9 +107,23 @@ def init_state(version: str, started_by: str = "") -> dict[str, Any]:
             "ci_config": {"status": "pending", "notes": ""},
             "apply_patches": {"status": "pending", "patches_updated": False, "notes": ""},
             "odh_image_check": {"status": "pending", "notes": ""},
-            "e2e_validation_release": {"status": "pending", "skipped_reason": "", "cluster_url": "", "ovms_image": "", "test_summary": "", "notes": ""},
+            "e2e_validation_release": {
+                "status": "pending",
+                "skipped_reason": "",
+                "cluster_url": "",
+                "ovms_image": "",
+                "test_summary": "",
+                "notes": "",
+            },
             "sync_stable": {"status": "pending", "notes": ""},
-            "e2e_validation_stable": {"status": "pending", "skipped_reason": "", "cluster_url": "", "ovms_image": "", "test_summary": "", "notes": ""},
+            "e2e_validation_stable": {
+                "status": "pending",
+                "skipped_reason": "",
+                "cluster_url": "",
+                "ovms_image": "",
+                "test_summary": "",
+                "notes": "",
+            },
             "sync_rhoai": {"status": "pending", "notes": ""},
             "rhds_auto_sync": {"status": "pending", "notes": ""},
         },

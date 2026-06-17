@@ -22,9 +22,11 @@ env/
 .DS_Store
 Thumbs.db
 
-# Testing
+# Testing / Coverage
 .coverage
+.coverage.*
 htmlcov/
+coverage.xml
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/

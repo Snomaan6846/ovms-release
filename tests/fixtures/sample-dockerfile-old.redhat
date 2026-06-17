@@ -1,0 +1,19 @@
+ARG BASE_IMAGE=registry.access.redhat.com/ubi9/ubi-minimal:9.6
+ARG RELEASE_BASE_IMAGE=registry.access.redhat.com/ubi9/ubi-minimal:9.6
+ARG OVMS_BRANCH=2026.1-release
+ARG OV_BRANCH=releases/2026/1
+ARG GENAI_BRANCH=releases/2026/1
+ARG TOKENIZERS_BRANCH=releases/2026/1
+ARG DRIVER_VERSION=24.2.0
+ARG ov_use_binary=0
+
+FROM ${BASE_IMAGE} as builder
+
+RUN microdnf install -y python3 python3-devel gcc gcc-c++ cmake make git
+
+WORKDIR /ovms
+RUN git clone --branch ${OVMS_BRANCH} --depth 1 https://github.com/opendatahub-io/openvino_model_server.git .
+
+FROM ${RELEASE_BASE_IMAGE}
+COPY --from=builder /ovms/bin /ovms/bin
+ENTRYPOINT ["/ovms/bin/ovms"]

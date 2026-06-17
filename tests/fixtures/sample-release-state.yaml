@@ -1,0 +1,104 @@
+schema_version: 1
+status: in_progress
+started_at: "2026-06-01T10:00:00+00:00"
+started_by: testuser
+aborted_at: ""
+abort_reason: ""
+abort_prs_closed: false
+
+phases:
+  preflight:
+    status: completed
+    notes: ""
+  mirror_branches:
+    status: completed
+    notes: "All 4 repos mirrored."
+  push_owners:
+    status: completed
+    notes: ""
+  arg_review:
+    status: completed
+    notes: "LTO flags added"
+  local_build:
+    status: passed
+    notes: ""
+  ci_config:
+    status: completed
+    notes: ""
+  apply_patches:
+    status: pending
+    patches_updated: false
+    notes: ""
+  odh_image_check:
+    status: pending
+    notes: ""
+  e2e_validation_release:
+    status: pending
+    skipped_reason: ""
+    cluster_url: ""
+    ovms_image: ""
+    test_summary: ""
+    notes: ""
+  sync_stable:
+    status: pending
+    notes: ""
+  e2e_validation_stable:
+    status: pending
+    skipped_reason: ""
+    cluster_url: ""
+    ovms_image: ""
+    test_summary: ""
+    notes: ""
+  sync_rhoai:
+    status: pending
+    notes: ""
+  rhds_auto_sync:
+    status: pending
+    notes: ""
+
+narrative: |
+  Release 2026.2 started. Branches mirrored, OWNERS pushed,
+  ARG review completed (new LTO flags). CI config done.
+
+config:
+  year: "2026"
+  minor: "2"
+  upstream_org: openvinotoolkit
+  midstream_org: opendatahub-io
+  downstream_org: red-hat-data-services
+  upstream_branch: releases/2026/2
+  ovms_midstream_branch: 2026.2-release
+  helper_midstream_branch: releases/2026/2
+  rhoai_version: "2.19"
+  base_image: "registry.access.redhat.com/ubi9/ubi-minimal:9.7"
+  release_base_image: "registry.access.redhat.com/ubi9/ubi-minimal:9.7"
+  driver_version: "25.05.32567"
+  lto_cxx_flags: "-flto=auto -ffat-lto-objects -march=haswell"
+  lto_ld_flags: "-flto=auto -ffat-lto-objects"
+  opendatahub_tests_image: "quay.io/opendatahub/opendatahub-tests:latest"
+  opendatahub_tests_path: ""
+  e2e_s3_bucket: ods-ci-s3
+  e2e_s3_region: us-east-1
+  e2e_s3_endpoint: "https://s3.us-east-1.amazonaws.com/"
+  e2e_ci_s3_endpoint: "https://s3.us-east-2.amazonaws.com/"
+  fork_remote: origin
+  midstream_remote: midstream
+  downstream_remote: downstream
+  jira_enabled: true
+  jira_project: RHOAIENG
+  jira_component: OVMS
+  jira_server: "https://redhat.atlassian.net"
+  jira_ticket_url: ""
+  notification_webhook: ""
+  notification_events:
+    - phase_complete
+    - phase_failed
+    - build_ready
+    - e2e_result
+    - release_complete
+
+pr_urls:
+  ci_config: "https://github.com/openshift/release/pull/12345"
+  patches: ""
+  stable: ""
+  rhoai: ""

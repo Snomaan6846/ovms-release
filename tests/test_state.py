@@ -1,9 +1,10 @@
 """Tests for state management."""
 
-import yaml
 from pathlib import Path
 
-from ovms_release.state import load_state, save_state, init_state, _migrate
+import yaml
+
+from ovms_release.state import _migrate, init_state, load_state, save_state
 
 
 def test_load_state(state_file):
@@ -77,5 +78,68 @@ def test_save_and_reload(tmp_state_dir):
     path = tmp_state_dir / "release-state.yaml"
     save_state(state, state_file=path)
     loaded = load_state(state_file=path)
+    assert loaded is not None
     assert loaded["started_by"] == "user2"
     assert loaded["config"]["minor"] == "3"
+
+
+def test_load_state_by_version(monkeypatch, tmp_path, sample_state):
+    """load_state with version= finds correct state file."""
+    import ovms_release.state as state_mod
+
+    state_dir = tmp_path / "2026.2"
+    state_dir.mkdir(parents=True)
+    state_path = state_dir / "release-state.yaml"
+    with open(state_path, "w") as f:
+        yaml.dump(sample_state, f, default_flow_style=False, sort_keys=False)
+    monkeypatch.setattr(state_mod, "DEFAULT_STATE_DIR", tmp_path)
+    state = load_state(version="2026.2")
+    assert state is not None
+    assert state["config"]["year"] == "2026"
+
+
+def test_load_state_invalid_yaml(tmp_path):
+    """load_state returns None for non-dict YAML content."""
+    state_path = tmp_path / "bad-state.yaml"
+    state_path.write_text("just a string\n")
+    state = load_state(state_file=state_path)
+    assert state is None
+
+
+def test_save_state_by_version(monkeypatch, tmp_path, sample_state):
+    """save_state with version= creates file in correct location."""
+    import ovms_release.state as state_mod
+
+    monkeypatch.setattr(state_mod, "DEFAULT_STATE_DIR", tmp_path)
+    result = save_state(sample_state, version="2026.2")
+    assert result == tmp_path / "2026.2" / "release-state.yaml"
+    assert result.exists()
+    loaded = yaml.safe_load(result.read_text())
+    assert loaded["status"] == "in_progress"
+
+
+def test_load_state_auto_detect_skips_dirs_without_state(monkeypatch, tmp_path, sample_state):
+    """Auto-detection skips dirs without release-state.yaml."""
+    import ovms_release.state as state_mod
+
+    (tmp_path / "2026.1").mkdir()
+    good_dir = tmp_path / "2026.2"
+    good_dir.mkdir()
+    state_path = good_dir / "release-state.yaml"
+    with open(state_path, "w") as f:
+        yaml.dump(sample_state, f, default_flow_style=False, sort_keys=False)
+    monkeypatch.setattr(state_mod, "DEFAULT_STATE_DIR", tmp_path)
+    state = load_state()
+    assert state is not None
+    assert state["config"]["minor"] == "2"
+
+
+def test_load_state_auto_detect_empty_dir(monkeypatch, tmp_path):
+    """Auto-detection returns None when no state files exist."""
+    import ovms_release.state as state_mod
+
+    (tmp_path / "2026.1").mkdir()
+    (tmp_path / "2026.2").mkdir()
+    monkeypatch.setattr(state_mod, "DEFAULT_STATE_DIR", tmp_path)
+    state = load_state()
+    assert state is None

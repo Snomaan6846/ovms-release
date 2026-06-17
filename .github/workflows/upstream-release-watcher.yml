@@ -17,6 +17,7 @@ jobs:
           - openvinotoolkit/openvino_tokenizers
     steps:
       - name: Check for new release branches
+        id: check-upstream
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

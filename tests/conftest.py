@@ -1,9 +1,5 @@
 """Shared pytest fixtures for ovms-release tests."""
 
-import os
-import tempfile
-from pathlib import Path
-
 import pytest
 import yaml
 
@@ -36,9 +32,23 @@ def sample_state():
             "ci_config": {"status": "pending", "notes": ""},
             "apply_patches": {"status": "pending", "patches_updated": False, "notes": ""},
             "odh_image_check": {"status": "pending", "notes": ""},
-            "e2e_validation_release": {"status": "pending", "skipped_reason": "", "cluster_url": "", "ovms_image": "", "test_summary": "", "notes": ""},
+            "e2e_validation_release": {
+                "status": "pending",
+                "skipped_reason": "",
+                "cluster_url": "",
+                "ovms_image": "",
+                "test_summary": "",
+                "notes": "",
+            },
             "sync_stable": {"status": "pending", "notes": ""},
-            "e2e_validation_stable": {"status": "pending", "skipped_reason": "", "cluster_url": "", "ovms_image": "", "test_summary": "", "notes": ""},
+            "e2e_validation_stable": {
+                "status": "pending",
+                "skipped_reason": "",
+                "cluster_url": "",
+                "ovms_image": "",
+                "test_summary": "",
+                "notes": "",
+            },
             "sync_rhoai": {"status": "pending", "notes": ""},
             "rhds_auto_sync": {"status": "pending", "notes": ""},
         },

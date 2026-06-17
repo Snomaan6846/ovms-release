@@ -1,0 +1,45 @@
+build_root:
+  image_stream_tag:
+    name: release
+    namespace: openshift
+    tag: golang-1.21
+
+images:
+  - dockerfile_path: Dockerfile.redhat
+    from: ubi-minimal
+    to: openvino-model-server
+
+promotion:
+  namespace: ocp
+  name: "2026.1"
+
+resources:
+  '*':
+    requests:
+      cpu: "8"
+      memory: 16Gi
+
+releases:
+  latest:
+    release:
+      architecture: amd64
+      channel: stable
+      version: "4.14"
+
+tests:
+  - as: e2e-ovms
+    steps:
+      test:
+        - as: e2e
+          from: openvino-model-server
+          commands: |
+            echo "E2E test placeholder"
+          resources:
+            requests:
+              cpu: "4"
+              memory: 8Gi
+
+zz_generated_metadata:
+  branch: 2026.1-release
+  org: opendatahub-io
+  repo: openvino_model_server

@@ -44,7 +44,7 @@ On `--resume`: loads state, renders narrative, continues from next pending phase
 
 ## Prerequisites
 
-Run `bash "${CLAUDE_SKILL_DIR}/scripts/check-prerequisites.sh"` to verify:
+Run `ovms-release preflight` (no version) to verify prerequisites:
 - `gh` CLI authenticated to opendatahub-io, openshift, red-hat-data-services orgs
 - `git`, `python3`, `jq`, `patch`, `skopeo` installed
 - `podman` or `docker` + `oc` for E2E phases (graceful skip if not installed)
@@ -58,12 +58,12 @@ Run `bash "${CLAUDE_SKILL_DIR}/scripts/check-prerequisites.sh"` to verify:
 
 1. Run prerequisite check:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/check-prerequisites.sh"
+   ovms-release preflight
    ```
 
 2. Run full pre-flight intelligence gathering:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/preflight.sh" "${VERSION}"
+   ovms-release preflight "${VERSION}"
    ```
 
 3. Present the **Release Brief** to the user:
@@ -95,7 +95,7 @@ Mirrors upstream release branches to opendatahub-io org.
 
 1. Validate upstream branch exists in all 4 repos:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/mirror-branches.sh" "${VERSION}" --validate
+   ovms-release mirror "${VERSION}" --validate
    ```
 
 2. Create mirror branches with **repo-specific naming**:
@@ -104,7 +104,7 @@ Mirrors upstream release branches to opendatahub-io org.
 
 3. Execute:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/mirror-branches.sh" "${VERSION}"
+   ovms-release mirror "${VERSION}"
    ```
 
 4. **Tag the mirror point** for drift detection:
@@ -124,7 +124,7 @@ Creates PR to add OWNERS file to the release branch on `openvino_model_server` o
 
 1. Execute:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/push-owners.sh" "${VERSION}"
+   ovms-release owners "${VERSION}"
    ```
 
 2. Creates PR from user's fork to `opendatahub-io/openvino_model_server` on the release branch.
@@ -139,7 +139,7 @@ Compares Dockerfile.redhat ARGs between previous and current release.
 
 1. Execute diff:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/diff-args.sh" "${VERSION}"
+   ovms-release diff-args "${VERSION}"
    ```
 
 2. Present structured diff to user:
@@ -170,7 +170,7 @@ Generates openshift/release YAML and creates PR.
 
 1. Generate CI config:
    ```bash
-   python3 "${CLAUDE_SKILL_DIR}/scripts/generate-ci-config.py" "${VERSION}"
+   ovms-release ci-config "${VERSION}"
    ```
 
 2. **Validate generated YAML** (syntax + branch reference check).
@@ -191,7 +191,7 @@ Fetches patches from patches branch, applies them, creates PR.
 
 1. Execute:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/apply-patches.sh" "${VERSION}"
+   ovms-release patch "${VERSION}"
    ```
 
 2. If patches apply cleanly: create PR, update state.
@@ -230,9 +230,7 @@ Runs opendatahub-tests against the PR-built image.
 1. Pre-checks: AWS creds exported, cluster reachable (`oc whoami --show-server`).
 2. Execute:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/run-e2e-tests.sh" \
-     --image "quay.io/opendatahub/openvino_model_server:pr-${PR_NUMBER}" \
-     --state-file "${STATE_FILE}"
+   ovms-release-e2e "quay.io/opendatahub/openvino_model_server:pr-${PR_NUMBER}"
    ```
 3. On success: record passed in state, proceed to Phase 6.
 4. On failure: block Phase 6, show output, enter triage mode.
@@ -246,18 +244,14 @@ Tree transplant merge from release branch to stable.
 
 1. Execute tree transplant:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/tree-transplant.sh" "${VERSION}"
+   ovms-release sync-stable "${VERSION}"
    ```
-   Exit codes: 0=success, 1=git-failure, 2=awaiting git-clean confirmation.
+   The CLI prompts interactively if untracked files need confirmation.
 
-2. If exit 2: show untracked files, ask user to confirm cleanup, then:
+2. Verification is run automatically by the sync-stable command.
+   Manual verification can be done with:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/tree-transplant.sh" "${VERSION}" --confirm-clean
-   ```
-
-3. Run verification checks:
-   ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/verify-sync.sh" "${VERSION}"
+   ovms-release sync-stable "${VERSION}" --verify-only
    ```
    - Check A: File content matches release branch (excluding protected files)
    - Check B: .tekton/ and .github/workflows/ preserved from stable
@@ -277,9 +271,7 @@ Runs opendatahub-tests against the Konflux-built stable image.
 2. Pre-checks: same as Phase 5.7.
 3. Execute:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/run-e2e-tests.sh" \
-     --image "quay.io/opendatahub/openvino_model_server:${STABLE_TAG}" \
-     --state-file "${STATE_FILE}"
+   ovms-release-e2e "quay.io/opendatahub/openvino_model_server:${STABLE_TAG}"
    ```
 4. On success/failure/skip: same behavior as Phase 5.7.
 
@@ -291,7 +283,7 @@ Syncs stable branch content to rhoai branch, removing Konflux-specific files.
 
 1. Execute:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/sync-to-rhoai.sh" "${VERSION}"
+   ovms-release sync-rhoai "${VERSION}" --rhoai-version "${RHOAI_VERSION}"
    ```
    Commit message: "Sync stable to rhoai (OVMS ${VERSION})"
 
@@ -308,7 +300,7 @@ Monitors downstream auto-sync and final image availability.
 
 1. Check RHDS sync status:
    ```bash
-   bash "${CLAUDE_SKILL_DIR}/scripts/check-rhds-sync.sh" "${VERSION}"
+   ovms-release check-rhds "${VERSION}" --rhoai-version "${RHOAI_VERSION}"
    ```
 
 2. Verify final image on quay.io:

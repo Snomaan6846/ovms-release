@@ -5,6 +5,7 @@ import pytest
 from ovms_release.config import (
     get_branch_name,
     get_downstream_branch,
+    get_rhoai_branch,
     get_stable_branch,
     get_upstream_branch,
     parse_version,
@@ -45,3 +46,8 @@ def test_get_stable_branch():
 
 def test_get_downstream_branch():
     assert get_downstream_branch("2.19") == "rhoai-2.19"
+
+
+def test_get_rhoai_branch():
+    assert get_rhoai_branch("2.19") == "rhoai-2.19"
+    assert get_rhoai_branch("2.20") == "rhoai-2.20"
