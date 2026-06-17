@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ovms-release"
+version = "1.0.0"
+description = "OVMS release automation CLI with pre-flight intelligence and stateful tracking"
+requires-python = ">=3.10"
+dependencies = [
+    "typer[all]>=0.9",
+    "jinja2>=3.1",
+    "pyyaml>=6.0",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "shellcheck-py>=0.9"]
+
+[project.scripts]
+ovms-release = "ovms_release.cli:release_app"
+ovms-release-diff = "ovms_release.cli:diff_app"
+ovms-release-rebuild = "ovms_release.cli:rebuild_app"
+ovms-release-hotfix = "ovms_release.cli:hotfix_app"
+ovms-release-patch = "ovms_release.cli:patch_app"
+ovms-release-e2e = "ovms_release.cli:e2e_app"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,46 @@
+- name: ovms-release
+  description: >
+    Interactive OVMS release orchestrator with pre-flight intelligence,
+    stateful multi-session tracking, and human-in-the-loop approval gates.
+    Automates branch mirroring, CI config, patch application, tree transplant
+    merges, and branch syncs across the ODH/RHOAI/RHDS pipeline.
+  version: "1.0.0"
+  category: release-automation
+  tags: [ovms, openvino, release, konflux, sync, automation, rhoai, odh]
+  author:
+    name: AIPCC
+  license: Apache-2.0
+  source:
+    type: github
+    repo: opendatahub-io/ovms-release
+    ref: main
+  strict: false
+  skills_dir: .claude/skills
+  homepage: https://github.com/opendatahub-io/ovms-release
+  repository: https://github.com/opendatahub-io/ovms-release
+  skills:
+    - name: ovms-release
+      description: Interactive OVMS release orchestrator with pre-flight intelligence and multi-day state tracking
+      user-invocable: true
+    - name: ovms-release-diff
+      description: Read-only diff between two OVMS releases — ARG changes, commit delta, pinned dep versions
+      user-invocable: true
+    - name: ovms-release-rebuild
+      description: Trigger a CVE rebuild of OVMS via PR to downstream (microdnf handles RPMs, optional base image bump)
+      user-invocable: true
+    - name: ovms-release-hotfix
+      description: Cherry-pick a commit to an older OVMS release branch (tries webui first, falls back to command-line)
+      user-invocable: true
+    - name: ovms-release-patch
+      description: Diagnose and regenerate OVMS patch files when upstream structural changes break git apply
+      user-invocable: true
+    - name: ovms-release-e2e
+      description: Run opendatahub-tests E2E validation against any OVMS image on a RHOAI cluster (standalone or mid-release)
+      user-invocable: true
+  harnesses:
+    claude-code:
+      install: "/plugin install ovms-release@opendatahub-skills"
+  python:
+    package: ovms-release
+    requires_python: ">=3.10"
+  depends_on: []

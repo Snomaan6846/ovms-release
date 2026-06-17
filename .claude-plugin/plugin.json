@@ -1,0 +1,13 @@
+{
+  "name": "ovms-release",
+  "description": "Interactive OVMS release orchestrator for OpenVINO Model Server. Pre-flight intelligence, stateful tracking, and human-in-the-loop approval gates.",
+  "version": "1.0.0",
+  "author": {
+    "name": "AIPCC"
+  },
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/opendatahub-io/ovms-release",
+  "repository": {
+    "url": "https://github.com/opendatahub-io/ovms-release"
+  }
+}

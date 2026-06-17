@@ -1,0 +1,74 @@
+name: Upstream Release Watcher
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # Weekly on Monday at 08:00 UTC
+  workflow_dispatch:
+
+jobs:
+  check-upstream:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo:
+          - openvinotoolkit/model_server
+          - openvinotoolkit/openvino
+          - openvinotoolkit/openvino.genai
+          - openvinotoolkit/openvino_tokenizers
+    steps:
+      - name: Check for new release branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          UPSTREAM_REPO="${{ matrix.repo }}"
+          UPSTREAM_NAME=$(basename "$UPSTREAM_REPO")
+
+          # Map upstream to midstream repo
+          if [[ "$UPSTREAM_NAME" == "model_server" ]]; then
+            MIDSTREAM_REPO="opendatahub-io/openvino_model_server"
+          else
+            MIDSTREAM_REPO="opendatahub-io/${UPSTREAM_NAME}"
+          fi
+
+          echo "Checking ${UPSTREAM_REPO} against ${MIDSTREAM_REPO}..."
+
+          # Get upstream release branches
+          UPSTREAM_BRANCHES=$(gh api "repos/${UPSTREAM_REPO}/branches" --paginate --jq '.[].name' | grep '^releases/' | sort)
+
+          # Get midstream branches
+          MIDSTREAM_BRANCHES=$(gh api "repos/${MIDSTREAM_REPO}/branches" --paginate --jq '.[].name' | sort)
+
+          # Convert midstream naming to upstream format for comparison
+          if [[ "$UPSTREAM_NAME" == "model_server" ]]; then
+            MIRRORED=$(echo "$MIDSTREAM_BRANCHES" | grep -- '-release$' | sed 's/\(.*\)\.\(.*\)-release/releases\/\1\/\2/' | sort)
+          else
+            MIRRORED=$(echo "$MIDSTREAM_BRANCHES" | grep '^releases/' | sort)
+          fi
+
+          # Find new releases
+          NEW=$(comm -23 <(echo "$UPSTREAM_BRANCHES") <(echo "$MIRRORED"))
+
+          if [[ -n "$NEW" ]]; then
+            echo "::warning::New upstream releases detected in ${UPSTREAM_REPO}:"
+            echo "$NEW"
+            echo "new_releases=true" >> $GITHUB_OUTPUT
+            echo "releases<<EOF" >> $GITHUB_OUTPUT
+            echo "$NEW" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "All releases mirrored for ${UPSTREAM_REPO}."
+          fi
+
+      - name: Create issue if new releases found
+        if: steps.check-upstream.outputs.new_releases == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "New upstream release detected: ${{ matrix.repo }}" \
+            --body "New release branches detected in ${{ matrix.repo }}:
+
+          ${{ steps.check-upstream.outputs.releases }}
+
+          Run \`/ovms-release <version>\` to start the release process." \
+            --label "release,automated" || true

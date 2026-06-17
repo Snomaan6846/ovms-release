@@ -1,0 +1,103 @@
+---
+schema_version: 1
+status: in_progress
+started_at: "{{ started_at }}"
+started_by: "{{ started_by }}"
+aborted_at: ""
+abort_reason: ""
+abort_prs_closed: false
+
+phases:
+  preflight:
+    status: pending
+    notes: ""
+  mirror_branches:
+    status: pending
+    notes: ""
+  push_owners:
+    status: pending
+    notes: ""
+  arg_review:
+    status: pending
+    notes: ""
+  local_build:
+    status: pending
+    notes: ""
+  ci_config:
+    status: pending
+    notes: ""
+  apply_patches:
+    status: pending
+    patches_updated: false
+    notes: ""
+  odh_image_check:
+    status: pending
+    notes: ""
+  e2e_validation_release:
+    status: pending
+    skipped_reason: ""
+    cluster_url: ""
+    ovms_image: ""
+    test_summary: ""
+    notes: ""
+  sync_stable:
+    status: pending
+    notes: ""
+  e2e_validation_stable:
+    status: pending
+    skipped_reason: ""
+    cluster_url: ""
+    ovms_image: ""
+    test_summary: ""
+    notes: ""
+  sync_rhoai:
+    status: pending
+    notes: ""
+  rhds_auto_sync:
+    status: pending
+    notes: ""
+
+narrative: ""
+
+config:
+  year: "{{ year }}"
+  minor: "{{ minor }}"
+  upstream_org: openvinotoolkit
+  midstream_org: opendatahub-io
+  downstream_org: red-hat-data-services
+  upstream_branch: "releases/{{ year }}/{{ minor }}"
+  ovms_midstream_branch: "{{ year }}.{{ minor }}-release"
+  helper_midstream_branch: "releases/{{ year }}/{{ minor }}"
+  rhoai_version: "{{ rhoai_version | default('') }}"
+  base_image: "{{ base_image | default('') }}"
+  release_base_image: "{{ release_base_image | default('') }}"
+  driver_version: "{{ driver_version | default('') }}"
+  lto_cxx_flags: "{{ lto_cxx_flags | default('') }}"
+  lto_ld_flags: "{{ lto_ld_flags | default('') }}"
+  opendatahub_tests_image: "{{ odt_image | default('quay.io/opendatahub/opendatahub-tests:latest') }}"
+  opendatahub_tests_path: ""
+  e2e_s3_bucket: "{{ e2e_s3_bucket | default('ods-ci-s3') }}"
+  e2e_s3_region: "{{ e2e_s3_region | default('us-east-1') }}"
+  e2e_s3_endpoint: "{{ e2e_s3_endpoint | default('https://s3.us-east-1.amazonaws.com/') }}"
+  e2e_ci_s3_endpoint: "{{ e2e_ci_s3_endpoint | default('https://s3.us-east-2.amazonaws.com/') }}"
+  fork_remote: "{{ fork_remote | default('origin') }}"
+  midstream_remote: midstream
+  downstream_remote: downstream
+  jira_enabled: {{ jira_enabled | default(true) | lower }}
+  jira_project: "{{ jira_project | default('RHOAIENG') }}"
+  jira_component: "{{ jira_component | default('OVMS') }}"
+  jira_server: "{{ jira_server | default('https://redhat.atlassian.net') }}"
+  jira_ticket_url: ""
+  notification_webhook: "{{ notification_webhook | default('') }}"
+  notification_events:
+    - phase_complete
+    - phase_failed
+    - build_ready
+    - e2e_result
+    - release_complete
+
+pr_urls:
+  ci_config: ""
+  patches: ""
+  stable: ""
+  rhoai: ""

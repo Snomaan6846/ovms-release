@@ -1,0 +1,48 @@
+# ci-operator config for opendatahub-io/openvino_model_server {{ year }}.{{ minor }}-release
+# Place in: openshift/release/ci-operator/config/opendatahub-io/openvino_model_server/
+---
+build_root:
+  image_stream_tag:
+    name: release
+    namespace: openshift
+    tag: golang-1.21
+
+images:
+  - dockerfile_path: Dockerfile.redhat
+    from: ubi-minimal
+    to: openvino-model-server
+
+promotion:
+  namespace: ocp
+  name: "{{ year }}.{{ minor }}"
+
+resources:
+  '*':
+    requests:
+      cpu: "8"
+      memory: 16Gi
+
+releases:
+  latest:
+    release:
+      architecture: amd64
+      channel: stable
+      version: "4.14"
+
+tests:
+  - as: e2e-ovms
+    steps:
+      test:
+        - as: e2e
+          from: openvino-model-server
+          commands: |
+            echo "E2E test placeholder"
+          resources:
+            requests:
+              cpu: "4"
+              memory: 8Gi
+
+zz_generated_metadata:
+  branch: {{ year }}.{{ minor }}-release
+  org: opendatahub-io
+  repo: openvino_model_server

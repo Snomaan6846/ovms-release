@@ -1,0 +1,1 @@
+.claude/skills/ovms-release-diff/SKILL.md

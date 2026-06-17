@@ -1,0 +1,1 @@
+.claude/skills/ovms-release-e2e/SKILL.md

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "bash(git *)",
+      "bash(gh *)",
+      "bash(skopeo inspect *)",
+      "bash(oc whoami *)",
+      "bash(python3 scripts/*)",
+      "bash(bash scripts/*)",
+      "bash(cat *)",
+      "bash(ls *)",
+      "bash(head *)",
+      "bash(diff *)"
+    ],
+    "deny": [
+      "bash(rm -rf /)",
+      "bash(git push --force *)",
+      "bash(git push -f *)",
+      "bash(git reset --hard *)",
+      "bash(curl * --upload-file *)"
+    ]
+  }
+}

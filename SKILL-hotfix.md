@@ -1,0 +1,1 @@
+.claude/skills/ovms-release-hotfix/SKILL.md
