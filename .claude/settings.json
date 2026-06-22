@@ -1,23 +1,23 @@
 {
   "permissions": {
     "allow": [
-      "bash(git *)",
-      "bash(gh *)",
-      "bash(skopeo inspect *)",
-      "bash(oc whoami *)",
-      "bash(python3 scripts/*)",
-      "bash(bash scripts/*)",
-      "bash(cat *)",
-      "bash(ls *)",
-      "bash(head *)",
-      "bash(diff *)"
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(skopeo inspect *)",
+      "Bash(oc whoami *)",
+      "Bash(python3 scripts/*)",
+      "Bash(bash scripts/*)",
+      "Bash(cat *)",
+      "Bash(ls *)",
+      "Bash(head *)",
+      "Bash(diff *)"
     ],
     "deny": [
-      "bash(rm -rf /)",
-      "bash(git push --force *)",
-      "bash(git push -f *)",
-      "bash(git reset --hard *)",
-      "bash(curl * --upload-file *)"
+      "Bash(rm -rf /)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)",
+      "Bash(curl * --upload-file *)"
     ]
   }
 }
