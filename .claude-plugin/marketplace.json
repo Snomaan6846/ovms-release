@@ -1,0 +1,13 @@
+{
+  "name": "ovms-release-marketplace",
+  "owner": {
+    "name": "Syed Ali"
+  },
+  "plugins": [
+    {
+      "name": "ovms-release",
+      "source": ".",
+      "description": "Interactive OVMS release orchestrator for OpenVINO Model Server. Pre-flight intelligence, stateful tracking, and human-in-the-loop approval gates."
+    }
+  ]
+}
